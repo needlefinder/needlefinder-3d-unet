@@ -26,7 +26,6 @@ def main(argv):
         print('usage: fit.py --InputVolume <InputVolumePath> -OutputLabel <OutputLabelPath>')
         sys.exit()
     if os.path.isfile(InputVolume) and os.path.isdir(os.path.dirname(OutputLabel)):
-        ds = ProstateData()
         print("Making the model.")
         net = Unet(channels=1, 
            n_class=1, 
