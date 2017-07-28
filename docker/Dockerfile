@@ -26,7 +26,8 @@ RUN curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/p
 RUN pyenv global anaconda3-4.4.0
 RUN pyenv rehash
 
-# Clone Needlefinder model
+## Clone Needlefinder model
+RUN pwd
 RUN mkdir -p /home/deepinfer/github && \
     mkdir /home/deepinfer/data && \
     cd /home/deepinfer/github/ && \

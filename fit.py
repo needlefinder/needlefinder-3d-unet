@@ -10,7 +10,8 @@ def main(argv):
     OutputLabel = ''
     try:
         opts, args = getopt.getopt(argv, "hi:o:", ["InputVolume=", "OutputLabel="])
-    except getopt.GetoptError:
+    except ValueError:
+        raise(ValueError)
         print('usage: fit.py --InputVolume <InputVolumePath> --OutputLabel <OutputLabelPath>')
         sys.exit(2)
     for opt, arg in opts:
