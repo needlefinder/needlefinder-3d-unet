@@ -3,26 +3,29 @@ FROM ubuntu:16.04
 MAINTAINER Guillaume Pernelle <gpernelle@gmail.com>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
-ENV PYENV_DIR /root/.pyenv
-ENV PATH $PYENV_DIR/bin:$PATH
 
 RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates \
     libhdf5-dev g++ graphviz libglib2.0-0 libxext6 libsm6 libxrender1 \
     git mercurial subversion curl libcurl3 libcurl3-dev
 
+RUN useradd -m deepinfer
+
+WORKDIR /home/deepinfer
+USER deepinfer
+
+ENV HOME  /home/deepinfer
+ENV PYENV_ROOT $HOME/.pyenv
+ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
+
 RUN curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash && \
     pyenv init - && \
     pyenv virtualenv-init - && \
     pyenv update && \
-    pyenv install anaconda3-4.4.0 && \
-    pyenv global anaconda3-4.4.0
+    pyenv install anaconda3-4.4.0
+    
+RUN pyenv global anaconda3-4.4.0
+RUN pyenv rehash
 
-RUN useradd -m deepinfer && echo "deepinfer:deepinfer" | chpasswd && adduser deepinfer sudo
-
-RUN mkdir -p $PYENV_DIR && \
-    chown deepinfer $PYENV_DIR -R
-
-USER deepinfer
 
 RUN mkdir -p /home/deepinfer/github && \
     mkdir /home/deepinfer/data && \
@@ -31,10 +34,10 @@ RUN mkdir -p /home/deepinfer/github && \
     cd needlefinder-3d-unet
 
 # Python
-RUN pip install --upgrade pip && \
-    pip install -r requirements.txt && \
-    pip install ipdb pytest pytest-cov python-coveralls coverage==3.7.1 pytest-xdist pep8 pytest-pep8 pydot_ng && \
-    conda clean -yt
+RUN pyenv global anaconda3-4.4.0 && \
+    pip install --upgrade pip && \
+    pip install -r /home/deepinfer/github/needlefinder-3d-unet/requirements.txt
+
 
 EXPOSE 8888
 
