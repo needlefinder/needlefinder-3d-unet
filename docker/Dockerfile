@@ -41,6 +41,4 @@ RUN pyenv global anaconda3-4.4.0 && \
 
 EXPOSE 8888
 
-WORKDIR "/home/deepinfer"
-# CMD ["/bin/bash"]
 ENTRYPOINT ["python","/home/deepinfer/github/needlefinder-3d-unet/fit.py"]
