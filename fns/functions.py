@@ -181,6 +181,46 @@ def error_rate(predictions, labels):
         np.sum(np.argmax(predictions, 3) == np.argmax(labels, 3)) /
         (predictions.shape[1] * predictions.shape[2] * predictions.shape[3]))
 
+def predict_full_volume(net, arr_data, model_path="./unet_trained/model 6.cpkt"):
+    '''
+    Perform inference on subvolumes
+    '''
+    arr_out = []
+    imgs = []
+    for i in trange(arr_data.shape[0]):
+        img = arr_data[i]
+        img = img[np.newaxis,...,np.newaxis]
+        #input shape size required 1,148,148,148,1
+        img -= np.amin(img)
+        img /= np.amax(img)
+        imgs.append(img)
+    
+    outs = net.predict_multiple(model_path, imgs)
+    
+    for out in outs:
+        out = out[0][:,:,:,0]
+        # out = np.ones((60,60,60))*i
+        out_p = np.pad(out,((44,44),(44,44), (44,44)), mode='constant', constant_values=[0])
+        arr_out.append(out_p)
+    return arr_out
+
+# def predict_full_volume(net, arr_data, model_path="./unet_trained/model 6.cpkt"):
+#     '''
+#     Perform inference on subvolumes
+#     '''
+#     arr_out = []
+#     for i in trange(arr_data.shape[0]):
+#         img = arr_data[i]
+#         img = img[np.newaxis,...,np.newaxis]
+#         #input shape size required 1,148,148,148,1
+#         img -= np.amin(img)
+#         img /= np.amax(img)
+#         out = net.predict(model_path, img)[0][:,:,:,0]
+#         # out = np.ones((60,60,60))*i
+#         out_p = np.pad(out,((44,44),(44,44), (44,44)), mode='constant', constant_values=[0])
+#         arr_out.append(out_p)
+#     return arr_out
+
 def cutVolume(data, tile_in=60, tile=148):
     '''
     Cut the volume in smaller volumes, overlaping so the FOV of the unet (60x60x60) is cover in every location of the 
@@ -219,32 +259,15 @@ def cutVolume(data, tile_in=60, tile=148):
                 arr_data.append(data_s)
                 nbTiles += 1
                 # stop cutting if next part is over the boundaries
-                if (off_z*(k+1)) > (Mz - tile):
+                if (off_z*(k+1)) > (Mz - 44):
                     break
-            if (off_y*(j+1)) > (My - tile):
+            if (off_y*(j+1)) > (My - 44):
                     break
-        if (off_x*(i+1)) > (Mx - tile):
+        if (off_x*(i+1)) > (Mx - 44):
                     break
     print("number of tiles: %d " % nbTiles)
     arr_data = np.array(arr_data)
     return arr_data
-
-def predict_full_volume(net, arr_data, model_path="./unet_trained/model 6.cpkt"):
-    '''
-    Perform inference on subvolumes
-    '''
-    arr_out = []
-    for i in trange(arr_data.shape[0]):
-        img = arr_data[i]
-        img = img[np.newaxis,...,np.newaxis]
-        #input shape size required 1,148,148,148,1
-        img -= np.amin(img)
-        img /= np.amax(img)
-        out = net.predict(model_path, img)[0][:,:,:,0]
-        # out = np.ones((60,60,60))*i
-        out_p = np.pad(out,((44,44),(44,44), (44,44)), mode='constant', constant_values=[0])
-        arr_out.append(out_p)
-    return arr_out
 
 def recombine(arr_out, data, tile_in=60, tile=148):
     '''
@@ -275,11 +298,11 @@ def recombine(arr_out, data, tile_in=60, tile=148):
                 y = np.int(y)
                 z = np.int(z)
                 data[x : x + tile, y : y + tile, z : z + tile ] += arr_out[l]
-                if (off_z*(k+1)) > (Mz - tile):
+                if (off_z*(k+1)) > (Mz - 44):
                     break
-            if (off_y*(j+1)) > (My - tile):
+            if (off_y*(j+1)) > (My - 44):
                     break
-        if (off_x*(i+1)) > (Mx - tile):
+        if (off_x*(i+1)) > (Mx - 44):
                     break
 
     print("# of subvolumes merged: ", l+1)
