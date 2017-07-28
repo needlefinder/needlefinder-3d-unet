@@ -36,6 +36,7 @@ RUN pyenv global anaconda3-4.4.0 && \
     pip install --upgrade pip && \
     pip install -r /home/deepinfer/github/needlefinder-3d-unet/requirements.txt
 
+RUN echo 'hi'
 RUN cd /home/deepinfer/github/needlefinder-3d-unet && \
     git pull origin master
 EXPOSE 8888

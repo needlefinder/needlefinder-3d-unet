@@ -40,7 +40,7 @@ def main(argv):
         arr_data = cutVolume(data)
         print(50 * "-")
         print("Starting the segmenter.")
-        arr_pred = predict_full_volume(net, arr_data, model_path="./model/model.cpkt")
+        arr_pred = predict_full_volume(net, arr_data, model_path="/home/deepinfer/github/needlefinder-3d-unet/model/model.cpkt")
         print("Merging subvolumes")
         full_pred = recombine(arr_pred, data)
         nrrd.write(OutputLabel, full_pred, options=options)
