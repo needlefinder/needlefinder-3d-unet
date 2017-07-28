@@ -3,25 +3,24 @@ FROM ubuntu:16.04
 MAINTAINER Guillaume Pernelle <gpernelle@gmail.com>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
-ENV CONDA_DIR /opt/conda
-ENV PATH $CONDA_DIR/bin:$PATH
+ENV PYENV_DIR /root/.pyenv
+ENV PATH $PYENV_DIR/bin:$PATH
+
 RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificates \
     libhdf5-dev g++ graphviz libglib2.0-0 libxext6 libsm6 libxrender1 \
-    git mercurial subversion
+    git mercurial subversion curl libcurl3 libcurl3-dev
 
-RUN mkdir -p $CONDA_DIR && \
-    echo export PATH=$CONDA_DIR/bin:'$PATH' > /etc/profile.d/conda.sh && \
-    wget --quiet https://repo.continuum.io/archive/Anaconda3-4.4.0-Linux-x86_64.sh -O ~/anaconda.sh && \
-    /bin/bash ~/anaconda.sh -f -b -p $CONDA_DIR && \
-    rm ~/anaconda.sh
-
-# Needed for OpenCV
-# RUN apt-get install -y libgtk2.0-0
+RUN curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash && \
+    pyenv init - && \
+    pyenv virtualenv-init - && \
+    pyenv update && \
+    pyenv install anaconda3-4.4.0 && \
+    pyenv global anaconda3-4.4.0
 
 RUN useradd -m deepinfer && echo "deepinfer:deepinfer" | chpasswd && adduser deepinfer sudo
 
-RUN mkdir -p $CONDA_DIR && \
-    chown deepinfer $CONDA_DIR -R
+RUN mkdir -p $PYENV_DIR && \
+    chown deepinfer $PYENV_DIR -R
 
 USER deepinfer
 
@@ -33,7 +32,7 @@ RUN mkdir -p /home/deepinfer/github && \
 
 # Python
 RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+    pip install -r requirements.txt && \
     pip install ipdb pytest pytest-cov python-coveralls coverage==3.7.1 pytest-xdist pep8 pytest-pep8 pydot_ng && \
     conda clean -yt
 
