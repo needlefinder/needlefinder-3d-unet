@@ -34,7 +34,6 @@ RUN mkdir -p /home/deepinfer/github && \
     git checkout gpu
 
 # Python
-RUN echo 'hi'
 RUN pyenv global anaconda3-4.4.0 && \
     pip install --upgrade pip && \
     pip install -r /home/deepinfer/github/needlefinder-3d-unet/requirements.txt
@@ -44,7 +43,7 @@ USER root
 RUN ln -s /usr/local/nvidia/lib64/libcuda.so.1 /usr/lib/x86_64-linux-gnu/libcuda.so
 
 RUN cd /home/deepinfer/github/needlefinder-3d-unet && \
-    git pull origin master
+    git pull origin gpu
 EXPOSE 8888
 
 ENTRYPOINT ["python","/home/deepinfer/github/needlefinder-3d-unet/fit.py"]
