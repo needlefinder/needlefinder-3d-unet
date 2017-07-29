@@ -43,7 +43,8 @@ def main(argv):
         arr_pred = predict_full_volume(net, arr_data, model_path="/home/deepinfer/github/needlefinder-3d-unet/model/model.cpkt")
         print("Merging subvolumes")
         full_pred = recombine(arr_pred, data)
-        nrrd.write(OutputLabel, full_pred, options=options)
+        islands = post_processing(full_pred)
+        nrrd.write(OutputLabel, islands, options=options)
     else:
         print("Make sure the input file exists and the output file directory is valid.")
         print("InputVolume: ", InputVolume)

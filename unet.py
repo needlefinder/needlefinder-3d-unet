@@ -252,6 +252,31 @@ class Unet(object):
 
         return prediction
 
+    def predict_multiple(self, model_path, x_tests):
+        """
+        Uses the model to create a prediction for the given data
+
+        :param model_path: path to the model checkpoint to restore
+        :param x_tests: Array of data to predict on. Shape [[n, nx, ny, nz, channels], ...]
+        :returns prediction: The unet prediction Shape [n, px, py, pz, labels] (px=nx-self.offset/2)
+        """
+
+        init = tf.global_variables_initializer()
+        with tf.Session() as sess:
+            # Initialize variables
+            sess.run(init)
+            y_dummy = np.empty((x_tests[0].shape[0], x_tests[0].shape[1], x_tests[0].shape[2], x_tests[0].shape[3], self.n_class))
+
+            # Restore model weights from previously saved model
+            self.restore(sess, model_path)
+
+            predictions = []
+            for i in trange(len(x_tests)):
+                x_test = x_tests[i]
+                predictions.append(sess.run(self.predicter_label, feed_dict={self.x: x_test, self.y: y_dummy, self.keep_prob: 1.}))
+
+        return predictions
+
     def save(self, sess, model_path):
         """
         Saves the current session to a checkpoint

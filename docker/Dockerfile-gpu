@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM nvidia/cuda:8.0-cudnn5-runtime-ubuntu16.04
 
 MAINTAINER Guillaume Pernelle <gpernelle@gmail.com>
 
@@ -30,13 +30,19 @@ RUN mkdir -p /home/deepinfer/github && \
     mkdir /home/deepinfer/data && \
     cd /home/deepinfer/github/ && \
     git clone https://github.com/needlefinder/needlefinder-3d-unet && \
-    cd needlefinder-3d-unet
+    cd needlefinder-3d-unet && \
+    git checkout gpu
+
 # Python
+RUN echo 'hi'
 RUN pyenv global anaconda3-4.4.0 && \
     pip install --upgrade pip && \
     pip install -r /home/deepinfer/github/needlefinder-3d-unet/requirements.txt
 
-RUN echo 'hii'
+# Create correct path for libuda so Tensorflow can open it
+USER root
+RUN ln -s /usr/local/nvidia/lib64/libcuda.so.1 /usr/lib/x86_64-linux-gnu/libcuda.so
+
 RUN cd /home/deepinfer/github/needlefinder-3d-unet && \
     git pull origin master
 EXPOSE 8888
