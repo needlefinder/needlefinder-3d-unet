@@ -5,7 +5,7 @@ numpy==1.13.1
 scipy==0.19.1
 scikit-image
 scikit_learn==0.19b2
-tensorflow-gpu==1.2.1
+tensorflow==1.2.1
 tqdm==4.15.0
 transforms3d==0.3.1
 PyYAML==3.12
