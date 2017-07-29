@@ -313,4 +313,27 @@ def recombine(arr_out, data, tile_in=60, tile=148):
     data=data[44:-44,44:-44,44:-44]
     print(np.unique(data, return_counts=True))
     print(data.shape)
-    return data
+    return data!=0
+
+def post_processing(full_pred, min_area=150, max_residual=10):
+    ''' Clustering + removing small clusters + keeping only line-looking clusters'''
+    islands_ = measure.label(full_pred)
+    regions = measure.regionprops(islands_)
+    islands = np.zeros_like(full_pred, dtype=np.uint8)
+    K = len(regions)
+    print('Number of regions: %d' % K)
+    i=0
+    for k in range(K):
+        region = regions[k]
+        coords = region.coords
+        if region.area > min_area:
+            lm = measure.LineModelND()
+            lm.estimate(coords)
+            res = lm.residuals(coords)
+            mean_res = np.mean(res)
+            if mean_res < max_residual:
+                i+=1
+                print(i, 'residual: %.3f' % mean_res, 'area: %d' % region.area)
+                for x,y,z in coords:
+                    islands[x,y,z] = i
+    return islands
