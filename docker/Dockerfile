@@ -1,5 +1,4 @@
 FROM ubuntu:16.04
-
 MAINTAINER Guillaume Pernelle <gpernelle@gmail.com>
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
