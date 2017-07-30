@@ -6,29 +6,18 @@ print(SEGMENTER_PATH)
 sys.path.insert(1, SEGMENTER_PATH)
 
 def main(argv):
-    InputVolume = ''
-    OutputLabel = ''
-    size = 100
-    error = 2
-    usage = ('usage: fit.py --InputVolume <InputVolumePath> --OutputLabel <OutputLabelPath> --size <min obj size> --error <min error size>')
-    try:
-        opts, args = getopt.getopt(argv, "hi:o:", ["InputVolume=", "OutputLabel="])
-    except ValueError:
-        raise(ValueError)
-        print(usage)
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print(usage)
-            sys.exit()
-        elif opt in ("-i", "--InputVolume"):
-            InputVolume = arg
-        elif opt in ("-o", "--OutputLabel"):
-            OutputLabel = arg
-        elif opt in ("-s", "--size"):
-            size = arg
-        elif opt in ("-e", "--error"):
-            error = arg
+
+    parser = argparse.ArgumentParser(prog='fit.py')
+    parser.add_argument('-i', '--InputVolume', nargs='+', help='<InputVolumePath>', dest='input', default='')
+    parser.add_argument('-o', '--OutputLabel', nargs='+', help='<OutputLabelPath>', dest = 'output', default='')
+    parser.add_argument('-s', '--size', nargs='?', help='<min obj size>', dest='size', default=100)
+    parser.add_argument('-e', '--error', nargs='?', help='<min error size>', dest='error', default=2)
+
+    InputVolume = parser.input
+    OutputLabel = parser.output
+    size = parser.size
+    error = parser.error
+
     if InputVolume == '' or OutputLabel == '':
         print(usage)
         sys.exit()
