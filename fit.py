@@ -8,22 +8,29 @@ sys.path.insert(1, SEGMENTER_PATH)
 def main(argv):
     InputVolume = ''
     OutputLabel = ''
+    size = 100
+    error = 2
+    usage = ('usage: fit.py --InputVolume <InputVolumePath> --OutputLabel <OutputLabelPath> --size <min obj size> --error <min error size>')
     try:
         opts, args = getopt.getopt(argv, "hi:o:", ["InputVolume=", "OutputLabel="])
     except ValueError:
         raise(ValueError)
-        print('usage: fit.py --InputVolume <InputVolumePath> --OutputLabel <OutputLabelPath>')
+        print(usage)
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('fit.py --InputVolume <InputVolumePath> --OutputLabel <OutputLabelPath>')
+            print(usage)
             sys.exit()
         elif opt in ("-i", "--InputVolume"):
             InputVolume = arg
         elif opt in ("-o", "--OutputLabel"):
             OutputLabel = arg
+        elif opt in ("-s", "--size"):
+            size = arg
+        elif opt in ("-e", "--error"):
+            error = arg
     if InputVolume == '' or OutputLabel == '':
-        print('usage: fit.py --InputVolume <InputVolumePath> -OutputLabel <OutputLabelPath>')
+        print(usage)
         sys.exit()
     if os.path.isfile(InputVolume) and os.path.isdir(os.path.dirname(OutputLabel)):
         print("Making the model.")
@@ -43,7 +50,7 @@ def main(argv):
         arr_pred = predict_full_volume(net, arr_data, model_path="/home/deepinfer/github/needlefinder-3d-unet/model/model.cpkt")
         print("Merging subvolumes")
         full_pred = recombine(arr_pred, data)
-        islands = post_processing(full_pred)
+        islands = post_processing(full_pred, min_area=size, max_residual=error)
         nrrd.write(OutputLabel, islands, options=options)
     else:
         print("Make sure the input file exists and the output file directory is valid.")
