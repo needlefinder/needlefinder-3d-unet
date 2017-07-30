@@ -1,4 +1,4 @@
-import os, sys, getopt
+import os, sys, argparse
 import shutil
 from time import gmtime, strftime
 import numpy as np
