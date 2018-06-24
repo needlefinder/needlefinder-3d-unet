@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM tensorflow/tensorflow:latest-devel-gpu-py3
 
 MAINTAINER Guillaume Pernelle <gpernelle@gmail.com>
 
@@ -14,31 +14,36 @@ WORKDIR /home/deepinfer
 USER deepinfer
 
 ENV HOME  /home/deepinfer
-ENV PYENV_ROOT $HOME/.pyenv
-ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
+#ENV PYENV_ROOT $HOME/.pyenv
+#ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
 
-RUN curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash && \
-    pyenv init - && \
-    pyenv virtualenv-init - && \
-    pyenv update && \
-    pyenv install anaconda3-4.4.0
+#RUN curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash && \
+#    pyenv init - && \
+#    pyenv virtualenv-init - && \
+#    pyenv update && \
+#    pyenv install anaconda3-4.4.0
     
-RUN pyenv global anaconda3-4.4.0
-RUN pyenv rehash
+#RUN pyenv global anaconda3-4.4.0
 ## Clone Needlefinder model
+RUN echo '-- Cloning github repository'
 RUN mkdir -p /home/deepinfer/github && \
     mkdir /home/deepinfer/data && \
     cd /home/deepinfer/github/ && \
     git clone https://github.com/needlefinder/needlefinder-3d-unet && \
-    cd needlefinder-3d-unet
-# Python
-RUN pyenv global anaconda3-4.4.0 && \
-    pip install --upgrade pip && \
-    pip install -r /home/deepinfer/github/needlefinder-3d-unet/requirements.txt
+    cd needlefinder-3d-unet && \
+    git checkout gpu
 
-RUN echo 'hii'
+# Python
+#RUN pyenv global anaconda3-4.4.0 && \
+RUN    pip install --upgrade pip && \
+    pip3 install -r /home/deepinfer/github/needlefinder-3d-unet/requirements.txt
+
+# Create correct path for libuda so Tensorflow can open it
+USER root
+#RUN ln -s /usr/local/nvidia/lib64/libcuda.so.1 /usr/lib/x86_64-linux-gnu/libcuda.so
+
 RUN cd /home/deepinfer/github/needlefinder-3d-unet && \
-    git pull origin master
+    git pull origin gpu
 EXPOSE 8888
 
 ENTRYPOINT ["python","/home/deepinfer/github/needlefinder-3d-unet/fit.py"]
