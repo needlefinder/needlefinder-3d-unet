@@ -1,0 +1,11 @@
+Cython
+Pillow
+matplotlib
+numpy
+scipy
+scikit-image
+scikit_learn
+tqdm
+transforms3d
+PyYAML
+pynrrd

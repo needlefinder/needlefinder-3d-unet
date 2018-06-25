@@ -6,12 +6,14 @@ print(SEGMENTER_PATH)
 sys.path.insert(1, SEGMENTER_PATH)
 
 def main(argv):
-    usage = ('usage: fit.py --InputVolume <InputVolumePath> --OutputLabel <OutputLabelPath> --size <min obj size> --error <min error size>')
+    usage = ('usage: fit.py --InputVolume <InputVolumePath> --OutputLabel <OutputLabelPath> --MinObjectSize <min obj size> --MaxLineFitError <min error size>')
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--InputVolume', action='store', help='<InputVolumePath>', default='', dest='input')
     parser.add_argument('-o', '--OutputLabel', action='store', help='<OutputLabelPath>', default='', dest='output')
-    parser.add_argument('-s', '--size', action='store', help='<min obj size>', default=100, dest='size')
-    parser.add_argument('-e', '--error', action='store', help='<min error size>', default=2.0, dest='error')
+    parser.add_argument('-s', '--MinObjectSize', action='store', help='<min obj size>', default=100, dest='size')
+    parser.add_argument('-e', '--MaxLineFitError', action='store', help='<min error size>', default=2.0, dest='error')
+    # ModelName not used yet
+    # parser.add_argument('-e', '--ModelName', action='store', help='<ModelName>', default='', dest='modelname')
 
     args = vars(parser.parse_args())
     print(args)
@@ -38,7 +40,7 @@ def main(argv):
         arr_data = cutVolume(data)
         print(50 * "-")
         print("Starting the segmenter.")
-        arr_pred = predict_full_volume(net, arr_data, model_path="/home/deepinfer/github/needlefinder-3d-unet/model/model.cpkt")
+        arr_pred = predict_full_volume(net, arr_data, model_path="/app/model/model.cpkt")
         print("Merging subvolumes")
         full_pred = recombine(arr_pred, data)
         islands = post_processing(full_pred, min_area=int(size), max_residual=float(error))
