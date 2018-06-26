@@ -1,11 +1,7 @@
 Cython
-Pillow
 matplotlib
+SimpleITK
 numpy
 scipy
-scikit-image
 scikit_learn
-tqdm
-transforms3d
-PyYAML
-pynrrd
+lasagne
