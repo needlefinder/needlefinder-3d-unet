@@ -1,7 +1,4 @@
-Cython
 matplotlib
-SimpleITK
-numpy
-scipy
 scikit_learn
+SimpleITK
 lasagne
