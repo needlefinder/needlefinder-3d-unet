@@ -45,13 +45,15 @@ RUN pip install --upgrade six
 # Install bleeding-edge Theano
 #RUN pip install --upgrade pip
 RUN easy_install -U pip
-#RUN pip install --upgrade --no-deps git+git://github.com/Theano/Theano.git
+RUN pip install --upgrade https://github.com/Theano/Theano/archive/master.zip 
 #RUN pip install --upgrade --no-deps https://github.com/Theano/Theano.git
-RUN pip install --upgrade --no-deps theano
+#RUN pip install --upgrade --no-deps theano
 # Set up .theanorc for CUDA
-RUN echo "[global]\ndevice=cuda\nfloatX=float32\noptimizer_including=cudnn\n[lib]\ncnmem=0.1\n[nvcc]\nfastmath=True" > /root/.theanorc
+#RUN echo "[global]\ndevice=cuda\nfloatX=float32\noptimizer_including=cudnn\n[lib]\ncnmem=0.1\n[nvcc]\nfastmath=True" > /root/.theanorc
+RUN echo "[global]\ndevice=cuda\nfloatX=float32\n[nvcc]\nfastmath=True" > /root/.theanorc
 
-RUN pip install matplotlib scikit_learn SimpleITK lasagne
+RUN pip install matplotlib scikit_learn SimpleITK
+RUN pip install --upgrade https://github.com/Lasagne/Lasagne/archive/master.zip
 
 ADD app/requirements.txt /app/
 WORKDIR /app

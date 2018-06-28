@@ -1,11 +1,14 @@
 from segment_in_two_steps import *
+import os
+import argparse
+import sys
 
 SEGMENTER_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'needlefinder')
 print(SEGMENTER_PATH)
 sys.path.insert(1, SEGMENTER_PATH)
 
 def main(argv):
-    usage = ('usage: fit.py --InputVolume <InputVolumePath> --OutputLabel <OutputLabelPath> --MinObjectSize <min obj size> --MaxLineFitError <min error size>')
+    usage = ('usage: fit.py --InputVolume <InputVolumePath> --OutputLabel <OutputLabelPath>')
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--InputVolume', action='store', help='<InputVolumePath>', default='', dest='input')
     parser.add_argument('-o', '--OutputLabel', action='store', help='<OutputLabelPath>', default='', dest='output')
