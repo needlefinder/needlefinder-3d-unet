@@ -237,7 +237,6 @@ def WriteImage(img_np, output_fn, ref_img_sitk):
     img_sitk.CopyInformation(ref_img_sitk)
     sitk.WriteImage(img_sitk, output_fn)
 
-
 def segment_and_vote(case, out_fn):
 
     netsPath = "model"
@@ -262,7 +261,14 @@ def segment_and_vote(case, out_fn):
     print ("creating functions...")
     classify_fn = loadClassifierFunction(X, cnetwork)
     segment_fn = loadSegmentFunction(X, unetwork)
+    unetwork = load_net_parameters(unetwork, "%s/2/%d.npz" % (netsPath, training_epochs["2"]["unet"]))
+    cnetwork = load_net_parameters(cnetwork, "%s/2/CLASSIFIER_%d.npz" % (netsPath, training_epochs["2"]["classifier"]))
 
+    segmentation_sitk = segmentCase(classify_fn, segment_fn, case, unet_lp, outdim, margin)
+    sitk.WriteImage(segmentation_sitk, out_fn)
+
+    """
+    CODE FOR MULTISEGMENTATION STRATEGY
     segmentations=[]
     for i in range(5):
 
@@ -278,4 +284,5 @@ def segment_and_vote(case, out_fn):
     #WriteImage(dbscan_cleaned, "DBoutput.nrrd", segmentations[0])
     #removed_island_img = remove_small_island(dbscan_cleaned, intensity_threshold=0.8, island_threshold=50)
     #WriteImage(removed_island_img, out_fn, segmentations[0])
+    """
 
