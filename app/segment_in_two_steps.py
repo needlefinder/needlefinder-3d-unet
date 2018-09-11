@@ -3,6 +3,7 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot
 import sys
+from six.moves import cPickle
 import itertools
 import numpy as np
 from random import shuffle
@@ -259,8 +260,12 @@ def segment_and_vote(case, out_fn):
     cnetwork = createClassificationNet(X, 32, cnet_lp)
 
     print ("creating functions...")
-    classify_fn = loadClassifierFunction(X, cnetwork)
-    segment_fn = loadSegmentFunction(X, unetwork)
+    #classify_fn = loadClassifierFunction(X, cnetwork)
+    #segment_fn = loadSegmentFunction(X, unetwork)
+    with open('cfunc.save', 'rb') as f:
+        classify_fn = cPickle.load(f)
+    with open('ufunc.save', 'rb') as f:
+        segment_fn = cPickle.load(f)
     unetwork = load_net_parameters(unetwork, "%s/2/%d.npz" % (netsPath, training_epochs["2"]["unet"]))
     cnetwork = load_net_parameters(cnetwork, "%s/2/CLASSIFIER_%d.npz" % (netsPath, training_epochs["2"]["classifier"]))
 

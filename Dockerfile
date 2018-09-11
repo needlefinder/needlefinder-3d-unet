@@ -62,6 +62,10 @@ RUN pip install --upgrade https://github.com/Lasagne/Lasagne/archive/master.zip
 ADD app/requirements.txt /app/
 WORKDIR /app
 COPY ./app /app
+RUN echo "[global]\ndevice=cpu\nfloatX=float32\n[nvcc]\nfastmath=True\n[cuda]\nroot=/usr/local/cuda/bin\n[dnn]\ninclude_path=/usr/local/cuda/include\nlibrary_path=/usr/local/cuda/lib64\n" > /root/.theanorc
+RUN THEANO_FLAGS="device=cpu, dnn.base_path=/usr/local/cuda" python /app/compile_and_save_function.py
+RUN echo "[global]\ndevice=cuda\nfloatX=float32\n[nvcc]\nfastmath=True\n[cuda]\nroot=/usr/local/cuda/bin\n[dnn]\ninclude_path=/usr/local/cuda/include\nlibrary_path=/usr/local/cuda/lib64\n" > /root/.theanorc
 EXPOSE 8888
 
 ENTRYPOINT ["python","/app/fit.py"]
+
